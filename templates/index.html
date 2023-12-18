@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacation Spots Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Vacation Spots Map</h1>
+
+    <div id="map"></div>
+
+    <div id="spot-details">
+        <h2>Spot Details</h2>
+        <p id="spot-description"></p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 2);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var spots = {{ spots | tojson | safe }};
+
+        var spotDetails = document.getElementById('spot-details');
+        var spotDescription = document.getElementById('spot-description');
+
+        function showSpotDetails(spot) {
+            spotDetails.style.display = 'block';
+            spotDescription.innerText = spot.description;
+        }
+
+        for (var i = 0; i < spots.length; i++) {
+            var spot = spots[i];
+            var marker = L.marker([spot.latitude, spot.longitude]).addTo(map);
+
+            marker.bindPopup('<b>' + spot.place + '</b><br>Click for details').on('click', function() {
+                showSpotDetails(spot);
+            });
+        }
+    </script>
+</body>
+</html>
